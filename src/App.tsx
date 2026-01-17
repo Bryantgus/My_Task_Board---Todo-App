@@ -7,16 +7,38 @@ import { useState } from 'react'
 import Modal from './components/Modal'
 import TaskDetails from './components/TaskDetails'
 
+export type DataTask = {
+  icon?: 'laptod' | 'mns' | 'lift' | 'books' | 'clock'
+  title?: string
+  description?: string
+  status?: 'y' | 'g' | 'r' | 'default'
+}
+
 export default function App() {
 
-  const [toggleModal, setToggleModal] = useState<boolean>(true)
+  const [toggleModal, setToggleModal] = useState<boolean>(false)
+  const [dataTask, setDataTask] = useState<DataTask>({
+    icon: undefined,
+    title: undefined,
+    description: undefined,
+    status: undefined
+  })
+  const openTask = (id: number) => {
+    setDataTask({icon: })
+    setToggleModal(true)
 
+  }
   return (
     <div className='flex flex-col mt-5 justify-center items-center'>
 
       {toggleModal && (
         <Modal onClose={() => setToggleModal(false)}>
-          <TaskDetails close={() => setToggleModal(false)} />
+          <TaskDetails data={dataTask} 
+          close={() => {
+            setToggleModal(false)
+            const emptyTask: DataTask = {}
+            setDataTask(emptyTask)
+          }} />
         </Modal>
       )}
 
@@ -33,6 +55,7 @@ export default function App() {
       <div className='mb-10 w-[90%] sm:w-[70%] lg:w-[50%] flex flex-col mt-5 gap-5'>
         {tasks.map((it: TaskType) => (
           <ItemTask
+            open={openTask}
             key={it.id}
             id={it.id}
             icon={it.icon}
