@@ -5,7 +5,7 @@ import books from '../assets/books.png'
 import clock from '../assets/clock.png'
 import time from '../assets/Time_atack_duotone.svg' 
 import done from '../assets/Done_round_duotone.svg'
-import close from '../assets/close_ring_duotone-1.svg'
+import close from '../assets/close_ring_duotone.svg'
 
 export type TaskType = {
   id: number
