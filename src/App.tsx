@@ -7,38 +7,37 @@ import { useState } from 'react'
 import Modal from './components/Modal'
 import TaskDetails from './components/TaskDetails'
 
-export type DataTask = {
-  icon?: 'laptod' | 'mns' | 'lift' | 'books' | 'clock'
-  title?: string
+export type Task = {
+  id: number
+  icon: 'laptod' | 'mns' | 'lift' | 'books' | 'clock'
+  title: string
   description?: string
   status?: 'y' | 'g' | 'r' | 'default'
 }
 
 export default function App() {
 
-  const [toggleModal, setToggleModal] = useState<boolean>(false)
-  const [dataTask, setDataTask] = useState<DataTask>({
-    icon: undefined,
-    title: undefined,
-    description: undefined,
-    status: undefined
-  })
-  const openTask = (id: number) => {
-    setDataTask({icon: })
-    setToggleModal(true)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modeEdit, setModeEdit] = useState<string | null>(null)
 
+  const openTask = (id: number) => {
+    const task = tasks.find(it => it.id === id)
+    if (!task) return
+    setSelectedTask(task)
+    setIsModalOpen(true)
   }
+
   return (
     <div className='flex flex-col mt-5 justify-center items-center'>
 
-      {toggleModal && (
-        <Modal onClose={() => setToggleModal(false)}>
-          <TaskDetails data={dataTask} 
-          close={() => {
-            setToggleModal(false)
-            const emptyTask: DataTask = {}
-            setDataTask(emptyTask)
-          }} />
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <TaskDetails data={selectedTask}
+            close={() => {
+              setIsModalOpen(false)
+              setSelectedTask(null)
+            }} />
         </Modal>
       )}
 
@@ -65,7 +64,7 @@ export default function App() {
           />
         ))}
         <div className='w-full h-22 flex flex-row cursor-pointer bg-[#f5e8d5] p-5 items-center gap-3 rounded-2xl '
-          onClick={() => setToggleModal(true)}>
+          onClick={() => setIsModalOpen(true)}>
           <img
             src={add}
             alt={'add'}

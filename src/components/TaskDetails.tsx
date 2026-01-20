@@ -5,32 +5,31 @@ import lift from '../assets/lifting.png'
 import books from '../assets/books.png'
 import clock from '../assets/clock.png'
 import coffe from '../assets/coffee.png'
-import { useState } from 'react'
 import StatusItem from './StatusItem'
 import trash from '../assets/Trash.svg'
 import done1 from '../assets/Done_round.svg'
-
-const icons = [laptod, mns, coffe, lift, books, clock]
+import { useEffect, useState } from 'react'
+import type { Task } from '../App'
 
 type Props = {
+  mode: 'create' | 'edit'
+  data: Task | null
   close: () => void
+  onSave?: (task: Task) => void
 }
+const icons = [laptod, mns, coffe, lift, books, clock]
+
 
 type OptionsSelected = {
-  name: string
+  title: string
   description: string
   icon: number | undefined
   status: string | undefined
 }
 
-export default function ModalTaskDetails({ close }: Props) {
+export default function ModalTaskDetails({ close, data }: Props) {
   //Options Selected
-  const [os, setOs] = useState<OptionsSelected>({
-    name: '',
-    description: '',
-    icon: undefined,
-    status: undefined
-  })
+  const [os, setOs] = useState<OptionsSelected | null>(null)
 
   const setStatus = (type: string) => {
     console.log(type);
@@ -51,10 +50,10 @@ export default function ModalTaskDetails({ close }: Props) {
         <div className='flex gap-1 flex-col'>
           <p className='text-[#97A3B6]'>Task name</p>
           <input
-            type="text" value={os.name}
+            type="text" value={os.title}
             className='border border-[#E3E8EF] pl-2 rounded-lg w-full h-10'
             placeholder='Enter a Task Name'
-            onChange={(e) => setOs((prev) => ({ ...prev, name: e.target.value }))} />
+            onChange={(e) => setOs((prev) => ({ ...prev, title: e.target.value }))} />
         </div>
 
         <div className='flex gap-1 flex-col'>
