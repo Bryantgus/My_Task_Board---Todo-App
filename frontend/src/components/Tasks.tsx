@@ -1,11 +1,9 @@
-
-import ItemTask from './/ItemTask'
+import ItemTask from './ItemTask'
 import add from '../assets/Add_round_duotone.svg'
 import { useEffect, useState } from 'react'
 import Modal from './Modal'
 import TaskDetails from './TaskDetails'
 import api from '../config/api'
-
 
 export type Task = {
   id: number
@@ -16,10 +14,47 @@ export type Task = {
 }
 
 export default function Tasks() {
-
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [tasks, setTasks] = useState<Task[] | null>()
+  const [tasks, setTasks] = useState<Task[] | null>([])
+
+  const getAllTasks = async () => {
+    const userId = localStorage.getItem('userId')
+    if (!userId) return
+    try {
+      const response = await api.get(`${userId}`)
+      if (response.data) {
+        setTasks(response.data.tasks)
+      }
+    } catch (error) {
+      console.error("Error al obtener tareas:", error)
+    }
+  }
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const userId = localStorage.getItem('userId')
+      if (!userId) return
+
+      try {
+        const response = await api.get(`${userId}`)
+        if (response.data) {
+          setTasks(response.data.tasks)
+        }
+      } catch (error) {
+        console.error("Error al obtener tareas:", error)
+      }
+    }
+
+    fetchTasks()
+  }, []) // Se ejecuta solo una vez al montar
+
+  const handleRefresh = () => {
+    getAllTasks()
+    setIsModalOpen(false)
+    setSelectedTask(null)
+  }
+
   const openTask = (id: number) => {
     const task = tasks?.find(it => it.id === id)
     if (!task) return
@@ -27,37 +62,24 @@ export default function Tasks() {
     setIsModalOpen(true)
   }
 
-  useEffect(() => {
-    const userId = localStorage.getItem('userId')
-    const getAllTasks = async () => {
-      const response = await api.get(`${userId}`)
-      if (response.data) {
-        setTasks(response.data.tasks)
-      }
-
-    }
-
-    getAllTasks()
-  }, [])
-
-
   return (
-    <div className='w-full flex items-center justify-center'>
-
+    <div className='w-full flex items-center justify-center relative'>
       {isModalOpen && (
-        <Modal onClose={() => {
-          setIsModalOpen(false);
-          setSelectedTask(null)
-        }}>
-          <TaskDetails data={selectedTask}
-            close={() => {
-              setSelectedTask(null)
-              setIsModalOpen(false)
-            }} />
+        <Modal onClose={() => { setIsModalOpen(false); setSelectedTask(null); }}>
+          <TaskDetails
+            data={selectedTask}
+            close={handleRefresh}
+          />
         </Modal>
       )}
 
-      <div className='mb-10 w-[90%] sm:w-[70%] lg:w-[50%] flex flex-col mt-5 gap-5'>
+      <div className='mb-10 w-[90%] sm:w-[70%] relative lg:w-[50%] flex flex-col mt-5 gap-5'>
+        <div className='font-semibold flex justify-center'>
+          <p className='bg-gray-100 p-3 rounded-xl'>
+            Tu código es {localStorage.getItem('userId')}
+          </p>
+        </div>
+
         {tasks?.map((it: Task) => (
           <ItemTask
             open={openTask}
@@ -65,15 +87,18 @@ export default function Tasks() {
             id={it.id}
             icon={it.icon}
             title={it.title}
-            description={it.description ? it.description : ''}
+            description={it.description || ''}
             status={it.status}
           />
         ))}
-        <div className='w-full h-22 flex flex-row cursor-pointer bg-[#f5e8d5] p-5 items-center gap-3 rounded-2xl '
-          onClick={() => setIsModalOpen(true)}>
+
+        <div
+          className='w-full h-22 flex flex-row cursor-pointer bg-[#f5e8d5] p-5 items-center gap-3 rounded-2xl'
+          onClick={() => setIsModalOpen(true)}
+        >
           <img
             src={add}
-            alt={'add'}
+            alt='add'
             className='w-12 h-12 object-contain p-2 bg-[#e9a23b] rounded-xl'
           />
           <p className='text-[20px]'>Add new task</p>

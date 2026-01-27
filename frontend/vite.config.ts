@@ -4,8 +4,13 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/My_Task_Board---Todo-App/",
   plugins: [
     react(),
     tailwindcss(),
   ],
+  build: {
+    outDir: "dist",         
+    emptyOutDir: true,
+  },
 })

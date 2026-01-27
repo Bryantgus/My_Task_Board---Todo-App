@@ -1,4 +1,5 @@
-import type { Task } from "../App";
+import type { Task } from "../components/Tasks";
+
 
 export const tasks: Task[] = [
   {
