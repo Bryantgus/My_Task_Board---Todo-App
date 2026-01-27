@@ -9,7 +9,8 @@ import StatusItem from './StatusItem'
 import trash from '../assets/Trash.svg'
 import done1 from '../assets/Done_round.svg'
 import { useEffect, useState } from 'react'
-import type { Task } from '../App'
+import type { Task } from './Tasks'
+import api from '../config/api'
 
 type Props = {
   data: Task | null
@@ -59,6 +60,39 @@ export default function ModalTaskDetails({ close, data }: Props) {
     }))
   }
 
+  const createTask = async () => {
+    try {
+      const userId = localStorage.getItem('userId')
+      await api.post(`${userId}`, task)
+      console.log("creada");
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const udpateTask = async () => {
+    try {
+      const userId = localStorage.getItem('userId')
+      await api.patch(`${userId}/${task.id}`, task)
+      console.log("actualizada");
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const destroy = async () => {
+    try {
+      const userId = localStorage.getItem('userId')
+      await api.delete(`${userId}/${task.id}`)
+      console.log("actualizada");
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const saveOrDelete = (action: string) => {
     let returnForEmptyFields = false
     if (action === 'save') {
@@ -76,6 +110,7 @@ export default function ModalTaskDetails({ close, data }: Props) {
           icon: true
         }))
         returnForEmptyFields = true
+        return
       }
 
       if (returnForEmptyFields) {
@@ -83,16 +118,17 @@ export default function ModalTaskDetails({ close, data }: Props) {
       }
 
       if (task.id === -1) {
-        //crear nueva tarea
+        createTask()
+
       } else {
-        //actualizar tarea
+        udpateTask()
       }
 
     } else if (action === 'delete') {
       if (task.id === -1) {
         close()
       } else {
-        //eliminar tarea
+        destroy()
       }
 
     }

@@ -1,49 +1,19 @@
+import Tasks from './components/Tasks'
 import logo from './assets/Logo.svg'
 import edit from './assets/Edit_duotone.svg'
-import ItemTask from './components/ItemTask'
-import { tasks } from './mockData/tasksData'
-import add from './assets/Add_round_duotone.svg'
+import SignIn from './components/SignIn'
 import { useState } from 'react'
-import Modal from './components/Modal'
-import TaskDetails from './components/TaskDetails'
 
-export type Task = {
-  id: number
-  icon: number
-  title: string
-  description?: string
-  status?: 'y' | 'g' | 'r' | 'default'
-}
+// localStorage.setItem('userId', '3424')
+const userId = localStorage.getItem('userId')
+
 
 export default function App() {
 
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const openTask = (id: number) => {
-    const task = tasks.find(it => it.id === id)
-    if (!task) return
-    setSelectedTask(task)
-    setIsModalOpen(true)
-  }
+  const [show, setShow] = useState<boolean>(false)
 
   return (
     <div className='flex flex-col mt-5 justify-center items-center'>
-
-      {isModalOpen && (
-        <Modal onClose={() => {
-          setIsModalOpen(false);
-          setSelectedTask(null)
-        }}>
-          <TaskDetails data={selectedTask}
-            close={() => {
-              setSelectedTask(null)
-              setIsModalOpen(false)
-            }} />
-        </Modal>
-      )}
-
-
       <div className='w-[90%] sm:w-[70%] lg:w-[50%] flex justify-start items-start'>
         <div className='grid grid-cols-[auto_auto_auto] gap-2 w-fit items-center'>
           <img src={logo} alt="logo" />
@@ -53,28 +23,13 @@ export default function App() {
         </div>
       </div>
 
-      <div className='mb-10 w-[90%] sm:w-[70%] lg:w-[50%] flex flex-col mt-5 gap-5'>
-        {tasks.map((it: Task) => (
-          <ItemTask
-            open={openTask}
-            key={it.id}
-            id={it.id}
-            icon={it.icon}
-            title={it.title}
-            description={it.description ? it.description : ''}
-            status={it.status}
-          />
-        ))}
-        <div className='w-full h-22 flex flex-row cursor-pointer bg-[#f5e8d5] p-5 items-center gap-3 rounded-2xl '
-          onClick={() => setIsModalOpen(true)}>
-          <img
-            src={add}
-            alt={'add'}
-            className='w-12 h-12 object-contain p-2 bg-[#e9a23b] rounded-xl'
-          />
-          <p className='text-[20px]'>Add new task</p>
-        </div>
-      </div>
+      {userId || show ?
+        <Tasks />
+        :
+        <SignIn show={() => setShow(true)}/>
+      }
+
+
     </div>
   )
 }
